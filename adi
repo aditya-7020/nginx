@@ -1,0 +1,26 @@
+---
+- name: Install and start Nginx
+  hosts: your_servers_group
+  become: yes  # This enables privilege escalation to perform tasks as root
+
+  tasks:
+    - name: Update apt cache (for Debian/Ubuntu) or yum cache (for CentOS/RHEL)
+      become: yes
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Install Nginx
+      become: yes
+      package:
+        name: nginx
+        state: present
+      # Handler to ensure nginx service is started after installation
+      notify: Start Nginx
+
+  handlers:
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+
